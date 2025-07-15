@@ -51,7 +51,7 @@ class CrawlCoin extends Command
             Log::debug('Browsershot page: ' . $page);
             $html = static::shot($page);
 
-            if($html) {
+            if ($html) {
                 Log::debug('Save page: ' . $page);
                 $filename = 'crawled/' . static::pageName($page) . '.html';
                 Storage::disk('local')->put($filename, $html);
@@ -63,12 +63,13 @@ class CrawlCoin extends Command
     {
         $parse = [];
         // Use Browsershot to properly render JavaScript-heavy pages
-        try{
-            $parse =  Browsershot::url($url)
+        try {
+            $parse = Browsershot::url($url)
                 ->waitUntilNetworkIdle() // Wait for network to be idle (important for SPAs)
                 ->timeout(20) // Increase timeout to allow full rendering
+                ->noSandbox()
                 ->evaluate('document.documentElement.outerHTML'); // Get complete rendered HTML
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             Log::error('Browsershot error for URL: ' . $url . ' - ' . $e->getMessage());
             //return '';
         }
