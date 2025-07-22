@@ -25,7 +25,8 @@ class CrawlCoin extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Crawl coin site';
+    protected static $counter = 0;
 
     protected $env = 'production'; // or 'production' 'staging', 'development', etc.
 
@@ -67,11 +68,12 @@ class CrawlCoin extends Command
 
             $pages = static::pages();
             shuffle($pages);
-            $pages = array_slice($pages, 0, rand(5, 15));
+            $pages = array_slice($pages, 0, rand(13, 18));
 
             static::appendPages($pages);
             static::env($pages, $this->env);
             static::get($pages);
+
         }
         Log::debug(static::disconnect());
     }
@@ -103,11 +105,10 @@ class CrawlCoin extends Command
         foreach ($pages as $page) {
             Log::debug('Browsershot page: ' . $page);
             $html = static::shot($page);
-//            if ($html) {
-//                Log::debug('Save page: ' . $page);
-//                $filename = 'crawled/' . static::pageName($page) . '.html';
-//                Storage::disk('local')->put($filename, $html);
-//            }
+            Log::debug('Sleep for: ' . $_s = rand(1, 7) . ' seconds. Total:'. static::$counter);
+            sleep((int)$_s);
+            static::$counter++;
+
         }
     }
 
