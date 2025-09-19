@@ -26,12 +26,18 @@ class CrawlCoin extends Command
      * @var string
      */
     protected $description = 'Crawl coin site';
-    protected static $counter = 0;
+    protected static $counter = 1;
+    protected static $numberOfCountries = 5;
+    protected static $rndMinPages = 12;
+    protected static $rndMaxPages = 20;
+    protected static $rndMinSleep = 1;
+    protected static $rndMaxSleep = 4;
 
     protected $env = 'production'; // or 'production' 'staging', 'development', etc.
 
     protected $vpnCountries = [
         'Italy',
+        'Belgium',
         'Germany',
         'France',
         'Spain',
@@ -39,7 +45,6 @@ class CrawlCoin extends Command
         'Poland',
         'Sweden',
         'Finland',
-        'Belgium',
         'Austria',
         'Greece',
         'Portugal',
@@ -51,7 +56,6 @@ class CrawlCoin extends Command
 
     public function ip()
     {
-
         //get random country from $vpnCountries
         $result = Process::run('nordvpn connect ' . $this->vpnCountries[array_rand($this->vpnCountries)]);
         return ($result->output());
@@ -62,15 +66,15 @@ class CrawlCoin extends Command
      */
     public function handle()
     {
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < self::$numberOfCountries; $i++) { // loop three random countries/users
             $vpn = $this->ip();
             Log::info($vpn);
 
             $pages = static::pages();
             shuffle($pages);
-            $pages = array_slice($pages, 0, rand(13, 18));
+            $pages = array_slice($pages, 0, rand(self::$rndMinPages, self::$rndMaxPages));
 
-            static::appendPages($pages);
+          //  static::appendPages($pages);
             static::env($pages, $this->env);
             static::get($pages);
 
@@ -105,7 +109,7 @@ class CrawlCoin extends Command
         foreach ($pages as $page) {
             Log::debug('Browsershot page: ' . $page);
             $html = static::shot($page);
-            Log::debug('Sleep for: ' . $_s = rand(1, 7) . ' seconds. Total:'. static::$counter);
+            Log::debug('Sleep for: ' . $_s = rand(self::$rndMinSleep, self::$rndMaxSleep) . ' seconds. Total:'. static::$counter);
             sleep((int)$_s);
             static::$counter++;
 
