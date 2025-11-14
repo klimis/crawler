@@ -18,7 +18,7 @@ class CrawlCoin extends Command
      *
      * @var string
      */
-    protected $signature = 'crawl-coin';
+    protected $signature = 'crawl:coin';
 
     /**
      * The console command description.
